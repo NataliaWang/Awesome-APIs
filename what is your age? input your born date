@@ -1,0 +1,95 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+public class lab2 {
+    public static Map getHashMap(int year) {
+        Map<Integer,Integer> map = new HashMap<Integer,Integer>(){
+            {
+//              put(1,31);
+//              put(2,28);
+                for(int i=1;i<=12;i++) {
+                    if(i%2 == 1) {
+                        put(i,31);
+                    }else{ // 偶数月
+                        //判断平年闰年
+                        if(i==2){
+                            if(year % 4 != 0 ) { //平年
+                                put(2,28);
+                            }else{
+                                put(2,29);
+                            }
+                        }else{
+                            put(i,30);
+                        }
+                    }
+                }
+            }
+        };
+        return map;
+    }
+
+    public static boolean judgeDate(int month,int day,int year) { //validate the input
+        boolean flag = false;
+        LocalDate myDate = LocalDate.of(year,month,day);
+        LocalDate date = LocalDate.now();
+        int d = date.getDayOfMonth();
+        int m = date.getMonthValue();
+        int y = date.getYear();
+
+        Map map = lab2.getHashMap(year);
+        int days = (int) map.get(month);
+
+        //judge： whether the myDate would beyond the today
+        if(myDate.isBefore(date) && year>=1000 && year<=y && month>=1 && month<=12 && day>=1 && day<=days) {
+            flag = true;
+        }
+        if(!flag) {
+            System.out.println("Input Error! Try Again");
+        }
+        return flag;
+    }
+
+    public static LocalDate inputSpace() {
+        Scanner in = new Scanner(System.in);
+        System.out.println("Enter your birth month [1..12]:");
+        int month = in.nextInt();
+
+        System.out.println("Enter your birth day of month:");
+        int day = in.nextInt();
+
+        System.out.println("Enter your birth year [4-digit year]: " );
+        int year = in.nextInt();
+        return LocalDate.of(year,month,day);
+    }
+
+    public static void main(String[] args) {
+
+        LocalDate myDate = inputSpace();
+
+        //add restriction to input based on year input
+        while(!judgeDate(myDate.getMonthValue(),myDate.getDayOfMonth(),myDate.getYear())) {
+            myDate = inputSpace();
+        }
+        int year = myDate.getYear();
+        int month = myDate.getMonthValue();
+        int day = myDate.getMonthValue();
+//        // [4-digit year], how can we constraint the input of year
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY");
+//        formatter.format(LocalDate.of(year,month,day));
+        int age = LocalDate.now().getYear() - year ;
+        int sage = age -1;
+        if(month <= LocalDate.now().getMonthValue() && day < LocalDate.now().getDayOfMonth()){
+            System.out.println("Your birthday has already happened this year.");
+            System.out.println("You are "+ age+ " years old");
+        }else if(month == LocalDate.now().getMonthValue() && day == LocalDate.now().getDayOfMonth()){
+            System.out.println("Happy Birthday!");
+
+        }else{
+            System.out.println("Your birthday has not yet happened this year.");
+            System.out.println("You are "+ sage+ " years old");
+        }
+
+    }
+
+}
